@@ -1,3 +1,11 @@
+# AI Development Documents (internal use only)
+CLAUDE.md
+GEMINI.md
+TODO.md
+SESSION_NOTES.md
+BUGS.md
+.claude/
+
 # Dependencies
 node_modules/
 package-lock.json

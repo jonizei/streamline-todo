@@ -6,20 +6,43 @@ A multi-user, priority-based task queue server with multi-queue support. Streaml
 
 - **Multi-User Support** - Secure user authentication with JWT tokens
 - **Multi-Queue Architecture** - Organize tasks into separate queues (projects, contexts, teams)
-- **Smart Prioritization** - Automatic priority calculation based on impact, urgency, relevance, and effort
+- **Smart Prioritization** - Deadline-based priority calculation with automatic daily recalculation
 - **Focus Mode** - Only one active task per queue at a time
 - **Auto-Promotion** - Next highest priority task automatically becomes active when current task is completed
-- **Dynamic Re-prioritization** - Active task automatically demoted if priority drops below queued tasks
+- **Dynamic Re-prioritization** - Tasks gain urgency as deadlines approach
 - **RESTful API** - Simple HTTP endpoints for all operations
 - **Secure** - Password hashing (bcrypt), JWT authentication, rate limiting
 - **File-Based Storage** - No database required, data stored as JSON files
+- **Docker Ready** - One-command deployment with Docker Compose
 - **Type-Safe** - Built with TypeScript and Zod validation
-- **Well-Tested** - 233 backend tests + 184 frontend tests, all passing
+- **Well-Tested** - 417 total tests (233 backend + 184 frontend), 100% pass rate
 - **Modern UI** - Angular-based SPA with Tailwind CSS dark theme, optimistic updates
 
 ## Quick Start
 
-### Backend Installation
+### Option 1: Docker (Recommended)
+
+The fastest way to get started:
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd streamline-todo
+
+# Set JWT secret
+echo "JWT_SECRET=$(openssl rand -base64 32)" > .env
+
+# Start with Docker Compose
+docker compose up -d
+```
+
+Access the application at **http://localhost**
+
+See [DOCKER.md](DOCKER.md) for detailed Docker deployment guide.
+
+### Option 2: Local Development
+
+#### Backend Installation
 
 ```bash
 # Clone the repository
@@ -39,7 +62,7 @@ npm run dev
 
 The backend server will start at `http://localhost:3000`
 
-### Frontend Installation (Angular)
+#### Frontend Installation (Angular)
 
 ```bash
 # Navigate to ui directory
@@ -157,25 +180,26 @@ Authorization: Bearer <your-jwt-token>
 
 ### Priority Calculation
 
-Each task is automatically prioritized using this formula:
+Each task is automatically prioritized using a deadline-based urgency system:
 
 ```
 Effort_inv = 6 - Effort
-Priority = Impact × 0.35 + Urgency × 0.25 + Relevance × 0.25 + Effort_inv × 0.15
-
-If Urgency == 5:
-    Priority += 2.0
+Base = Impact × 0.35 + Urgency × 0.25 + Relevance × 0.25 + Effort_inv × 0.15
+Urgency Bonus = 2.0 × e^(-0.10 × days_remaining)
+Priority = Base + Urgency Bonus
 ```
 
 **Parameters (1-5 scale):**
 - **Impact** - How much value does this task provide?
-- **Urgency** - How time-sensitive is it?
+- **Urgency** - How time-sensitive is it? (determines auto-calculated deadline)
 - **Relevance** - How well does it align with your goals?
 - **Effort** - How much work is required? (lower effort = higher priority)
 
-**Critical Urgency Boost:** Tasks with urgency = 5 get a +2.0 bonus, ensuring critical items rise to the top.
+**Dynamic Urgency:** Tasks automatically gain urgency as their deadline approaches via exponential decay. A daily recalculation job at 2 AM UTC ensures priorities stay current.
 
-**Maximum Priority:** 7.0 (critical urgency task with max impact, relevance, and minimal effort)
+**Auto-Deadlines:** Each urgency level maps to a deadline (e.g., urgency 5 = 3 days, urgency 1 = 60 days). Users can also set custom deadlines.
+
+**Maximum Priority:** 7.0 (overdue task with max impact, relevance, and minimal effort)
 
 See [PRIORITY.md](PRIORITY.md) for detailed formula documentation and examples.
 
@@ -339,7 +363,9 @@ streamline-todo/
 │   │   ├── userService.ts
 │   │   ├── queueService.ts
 │   │   ├── taskService.ts
-│   │   └── priorityCalc.ts
+│   │   ├── priorityCalc.ts
+│   │   ├── priorityRecalculationService.ts
+│   │   └── scheduledJobs.ts
 │   ├── repositories/    # Data persistence
 │   │   ├── userRepository.ts
 │   │   ├── queueRepository.ts
@@ -356,7 +382,14 @@ streamline-todo/
 │   │   └── jwt.ts
 │   ├── app.ts          # Express app configuration
 │   └── index.ts        # Server entry point
-├── tests/              # Test files
+├── ui/                 # Angular frontend
+│   ├── src/
+│   │   ├── app/
+│   │   └── environments/
+│   ├── Dockerfile
+│   ├── nginx.conf
+│   └── package.json
+├── tests/              # Test files (233 tests)
 │   ├── priorityCalc.test.ts
 │   ├── taskService.test.ts
 │   ├── userModel.test.ts
@@ -366,17 +399,21 @@ streamline-todo/
 │   ├── authRoutes.test.ts
 │   ├── routes.test.ts
 │   └── authorization.test.ts
+├── scripts/            # Utility scripts
+│   └── migrate-to-multiuser.ts
 ├── data/               # Data storage (auto-created, gitignored)
 │   ├── users/
 │   └── queues/
-├── scripts/            # Utility scripts
-│   └── migrate-to-multiuser.ts
+├── Dockerfile          # Backend Docker image
+├── docker-compose.yml  # Multi-container orchestration
+├── .dockerignore
+├── .gitignore
 ├── .env.example        # Environment variable template
-├── CLAUDE.md           # AI coding assistant instructions
-├── PRIORITY.md         # Priority formula documentation
 ├── API.md              # Complete API documentation
-├── TODO.md             # Implementation checklist
-└── SESSION_NOTES.md    # Development session notes
+├── DOCKER.md           # Docker deployment guide
+├── PRIORITY.md         # Priority formula documentation
+├── PRIORITY_UI.md      # UI form guidelines
+└── README.md           # This file
 ```
 
 ### Running Tests
@@ -448,14 +485,32 @@ cd ui && npm run build
 
 ### Deployment Options
 
-**Option 1: Separate Servers**
+**Option 1: Docker Compose (Recommended)**
+
+The simplest production deployment:
+
+```bash
+# Set environment variables
+echo "JWT_SECRET=$(openssl rand -base64 32)" > .env
+
+# Start services
+docker compose up -d
+```
+
+Access at http://localhost (or configure domain with reverse proxy). See [DOCKER.md](DOCKER.md) for comprehensive Docker deployment guide including:
+- Production configuration
+- HTTPS setup with Nginx/Traefik
+- Backup and restore procedures
+- Monitoring and troubleshooting
+
+**Option 2: Separate Servers**
 
 Deploy backend and frontend separately:
 - Backend: Any Node.js hosting (Heroku, Railway, AWS, DigitalOcean)
 - Frontend: Static hosting (Vercel, Netlify, Cloudflare Pages)
 - Configure frontend `apiUrl` to point to backend
 
-**Option 2: Single Server with Nginx**
+**Option 3: Single Server with Nginx**
 
 Serve both from one server using Nginx:
 
@@ -483,34 +538,8 @@ server {
 }
 ```
 
-**Option 3: Docker Compose**
-
-Use the provided `docker-compose.yml` (create if needed) to deploy both services:
-
-```yaml
-version: '3.8'
-services:
-  backend:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      - JWT_SECRET=${JWT_SECRET}
-      - NODE_ENV=production
-    volumes:
-      - ./data:/app/data
-
-  frontend:
-    build: ./ui
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-```
-
 **Production Checklist:**
 - [ ] Set strong `JWT_SECRET` in backend environment
-- [ ] Configure CORS in backend for frontend domain
 - [ ] Use HTTPS (Let's Encrypt or cloud provider SSL)
 - [ ] Set up data directory backups
 - [ ] Configure environment variables properly
@@ -538,6 +567,8 @@ This adds `user_id` fields to existing queues. See the script for details.
 - ✅ Comprehensive test coverage (417 total tests)
 - ✅ Optimistic UI updates
 - ✅ Production-ready deployment guides
+- ✅ Docker support with Docker Compose
+- ✅ Deadline-based priority system with automatic recalculation
 
 Potential future enhancements:
 - Task dependencies
@@ -567,12 +598,10 @@ MIT License - see LICENSE file for details
 ## Documentation
 
 - [API.md](API.md) - Complete API reference with authentication
-- [PRIORITY.md](PRIORITY.md) - Priority calculation formula
+- [PRIORITY.md](PRIORITY.md) - Priority calculation formula and deadline system
+- [PRIORITY_UI.md](PRIORITY_UI.md) - User-facing form options and UI guidelines
+- [DOCKER.md](DOCKER.md) - Docker deployment guide and best practices
 - [ui/README.md](ui/README.md) - Frontend architecture and deployment guide
-- [BUGS.md](BUGS.md) - Known issues and their resolutions
-- [CLAUDE.md](CLAUDE.md) - Development guide for AI assistants
-- [TODO.md](TODO.md) - Implementation checklist
-- [SESSION_NOTES.md](SESSION_NOTES.md) - Development session notes
 
 ## Support
 
