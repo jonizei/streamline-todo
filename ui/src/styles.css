@@ -1,0 +1,39 @@
+/* Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dark theme base styles */
+body {
+  @apply bg-gray-900 text-gray-100 min-h-screen;
+}
+
+/* Task status transitions */
+.task-status-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+.task-status-active {
+  border-left: 4px solid #3b82f6;
+}
+
+.task-status-done {
+  opacity: 0.6;
+  border-left: 4px solid #10b981;
+}
+
+.task-status-blocked {
+  border-left: 4px solid #f59e0b;
+}
+
+.task-status-removed {
+  opacity: 0.4;
+  border-left: 4px solid #6b7280;
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+}

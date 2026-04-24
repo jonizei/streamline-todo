@@ -1,0 +1,36 @@
+# Dependencies
+node_modules
+npm-debug.log
+package-lock.json
+
+# Build output
+dist
+.angular
+
+# Test files
+*.spec.ts
+karma.conf.js
+coverage
+
+# Environment files
+.env
+.env.local
+.env.*.local
+src/environments/environment.ts
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md

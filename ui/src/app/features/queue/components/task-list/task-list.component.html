@@ -1,0 +1,52 @@
+@if (tasks.length === 0) {
+  <div class="text-center py-12">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-700 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+    </svg>
+    <p class="text-gray-400 text-lg">No tasks in this queue yet</p>
+  </div>
+} @else {
+  <div class="space-y-6">
+    @for (group of taskGroups; track group.status) {
+      <div class="bg-gray-800 border border-gray-700 rounded-lg overflow-hidden">
+        <!-- Group Header -->
+        <button
+          (click)="toggleGroup(group)"
+          class="w-full px-6 py-4 flex items-center justify-between hover:bg-gray-750 transition-colors"
+        >
+          <div class="flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" [class]="getStatusColor(group.status) + ' h-5 w-5'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="getStatusIcon(group.status)" />
+            </svg>
+            <h3 [class]="getStatusColor(group.status) + ' text-lg font-semibold'">
+              {{ group.status }}
+            </h3>
+            <span class="text-gray-500 text-sm">({{ group.count }})</span>
+          </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 text-gray-400 transition-transform"
+            [class.rotate-180]="group.isExpanded"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        <!-- Group Content -->
+        @if (group.isExpanded) {
+          <div class="px-6 pb-6 pt-4 space-y-4 bg-gray-900/50 border-t border-gray-700/50">
+            @for (task of group.tasks; track task.id) {
+              <app-task-card
+                [task]="task"
+                (edit)="onEditTask($event)"
+              ></app-task-card>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+}

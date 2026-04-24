@@ -1,0 +1,35 @@
+<header class="bg-gray-800 border-b border-gray-700">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo and Title -->
+      <div class="flex items-center">
+        <a routerLink="/dashboard" class="flex items-center space-x-3">
+          <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+          </div>
+          <span class="text-xl font-bold text-white">Streamline Todo</span>
+        </a>
+      </div>
+
+      <!-- User Info and Logout -->
+      @if (currentUser) {
+        <div class="flex items-center space-x-2 sm:space-x-4">
+          <div class="text-right hidden sm:block">
+            @if (currentUser.name) {
+              <p class="text-sm font-medium text-white">{{ currentUser.name }}</p>
+            }
+            <p class="text-xs text-gray-400">{{ currentUser.email }}</p>
+          </div>
+          <button
+            (click)="onLogout()"
+            class="px-3 py-2 sm:px-4 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm font-medium"
+          >
+            Logout
+          </button>
+        </div>
+      }
+    </div>
+  </div>
+</header>

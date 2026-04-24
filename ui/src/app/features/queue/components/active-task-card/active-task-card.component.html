@@ -1,0 +1,63 @@
+<div class="bg-gradient-to-br from-blue-900 to-blue-800 border-2 border-blue-600 rounded-lg p-6 shadow-lg">
+  <div class="flex items-start justify-between mb-4">
+    <div class="flex-1 cursor-pointer" (click)="onEdit()">
+      <div class="flex items-center gap-3 mb-2">
+        <span class="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-bold uppercase tracking-wide rounded-full">
+          Active Task
+        </span>
+        @if (task.custom_deadline) {
+          <span class="text-blue-300 text-sm">Deadline {{ task.deadline | relativeDate }}</span>
+        }
+      </div>
+      <h2 class="text-2xl font-bold text-white mb-2">{{ task.title }}</h2>
+      @if (task.description) {
+        <p class="text-blue-100 text-base">{{ task.description }}</p>
+      }
+    </div>
+    <button
+      (click)="$event.stopPropagation(); onEdit()"
+      class="p-2 text-blue-300 hover:text-white hover:bg-blue-700 rounded-lg transition-colors"
+      title="Edit task"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Priority Badge -->
+  <div class="mb-6 flex justify-center">
+    <app-priority-badge [priority]="task.priority"></app-priority-badge>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="flex gap-2 sm:gap-3">
+    <button
+      (click)="onMarkDone()"
+      class="flex-1 px-2 py-2.5 sm:px-4 sm:py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-1 sm:gap-2"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <span class="text-xs sm:text-base">Done</span>
+    </button>
+    <button
+      (click)="onMarkBlocked()"
+      class="flex-1 px-2 py-2.5 sm:px-4 sm:py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-1 sm:gap-2"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+      </svg>
+      <span class="text-xs sm:text-base">Block</span>
+    </button>
+    <button
+      (click)="onMarkRemoved()"
+      class="flex-1 px-2 py-2.5 sm:px-4 sm:py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-1 sm:gap-2"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+      </svg>
+      <span class="text-xs sm:text-base">Remove</span>
+    </button>
+  </div>
+</div>

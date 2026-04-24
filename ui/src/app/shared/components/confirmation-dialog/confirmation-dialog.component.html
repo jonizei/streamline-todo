@@ -1,0 +1,26 @@
+<div *ngIf="isOpen" class="modal-overlay" (click)="onBackdropClick($event)">
+  <div class="confirmation-dialog">
+    <div class="dialog-header">
+      <h2>{{ title }}</h2>
+    </div>
+
+    <div class="dialog-body">
+      <p>{{ message }}</p>
+    </div>
+
+    <div class="dialog-footer">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="onCancel()">
+        {{ cancelButtonText }}
+      </button>
+      <button
+        type="button"
+        class="btn {{ confirmButtonClass }}"
+        (click)="onConfirm()">
+        {{ confirmButtonText }}
+      </button>
+    </div>
+  </div>
+</div>

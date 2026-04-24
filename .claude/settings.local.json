@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl:*)",
+      "Bash(npm install:*)",
+      "Bash(npm test)",
+      "Bash(npm test:*)",
+      "Bash(timeout 3 npm run dev:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)",
+      "Bash(npx vitest:*)",
+      "Bash(npx @angular/cli@latest version:*)",
+      "Bash(npx @angular/cli@latest new:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(tree:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(lsof:*)",
+      "Bash(npm start)",
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Bash(node -e:*)",
+      "Bash(node test-login.mjs:*)",
+      "Bash(node test-service.mjs:*)",
+      "Bash(kill:*)",
+      "Bash(npm run start)",
+      "Bash(npx tsx:*)",
+      "Bash(npm start --prefix ui)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

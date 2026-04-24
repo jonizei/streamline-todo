@@ -1,0 +1,81 @@
+<div class="bg-gray-800 rounded-lg p-6">
+  <h2 class="text-2xl font-bold text-white mb-6">
+    {{ isEditMode ? 'Edit Queue' : 'Create New Queue' }}
+  </h2>
+
+  <form [formGroup]="queueForm" (ngSubmit)="onSubmit()" class="space-y-4">
+    <!-- Name Field -->
+    <div>
+      <label for="name" class="block text-sm font-medium text-gray-300 mb-1">
+        Queue Name *
+      </label>
+      <input
+        id="name"
+        type="text"
+        formControlName="name"
+        class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        placeholder="e.g., Work Projects"
+      />
+      @if (name?.invalid && name?.touched) {
+        <p class="mt-1 text-sm text-red-400">
+          @if (name?.errors?.['required']) {
+            Queue name is required
+          }
+          @if (name?.errors?.['maxlength']) {
+            Queue name must not exceed 200 characters
+          }
+        </p>
+      }
+    </div>
+
+    <!-- Description Field -->
+    <div>
+      <label for="description" class="block text-sm font-medium text-gray-300 mb-1">
+        Description
+      </label>
+      <textarea
+        id="description"
+        formControlName="description"
+        rows="3"
+        class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+        placeholder="Optional description for this queue"
+      ></textarea>
+      @if (description?.invalid && description?.touched) {
+        <p class="mt-1 text-sm text-red-400">
+          @if (description?.errors?.['maxlength']) {
+            Description must not exceed 1000 characters
+          }
+        </p>
+      }
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex gap-3 pt-2">
+      <button
+        type="submit"
+        [disabled]="isLoading"
+        class="flex-1 py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        @if (isLoading) {
+          <span class="flex items-center justify-center">
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Saving...
+          </span>
+        } @else {
+          {{ isEditMode ? 'Update Queue' : 'Create Queue' }}
+        }
+      </button>
+      <button
+        type="button"
+        (click)="onCancel()"
+        [disabled]="isLoading"
+        class="px-6 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>

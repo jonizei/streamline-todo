@@ -1,0 +1,80 @@
+<div class="min-h-screen bg-gray-900">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header Section -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-white">Your Queues</h1>
+        <p class="text-gray-400 mt-1">Manage your task queues and priorities</p>
+      </div>
+      <button
+        (click)="onCreateQueue()"
+        class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        New Queue
+      </button>
+    </div>
+
+    <!-- Error Message -->
+    @if (errorMessage) {
+      <div class="bg-red-900/20 border border-red-800 text-red-400 px-4 py-3 rounded-lg mb-6">
+        {{ errorMessage }}
+      </div>
+    }
+
+    <!-- Loading State -->
+    @if (isLoading) {
+      <app-loading-spinner mode="inline" message="Loading queues..."></app-loading-spinner>
+    }
+
+    <!-- Empty State -->
+    @else if (queues.length === 0) {
+      <app-empty-state
+        icon="📋"
+        title="No queues yet"
+        message="Create your first queue to start managing tasks">
+        <button
+          (click)="onCreateQueue()"
+          class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
+        >
+          Create Your First Queue
+        </button>
+      </app-empty-state>
+    }
+
+    <!-- Queue Grid -->
+    @else {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (queue of queues; track queue.id) {
+          <app-queue-card
+            [queue]="queue"
+            (edit)="onEditQueue($event)"
+            (delete)="onDeleteQueue($event)"
+          ></app-queue-card>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Queue Form Modal -->
+  <app-modal [isOpen]="showQueueForm" (close)="onCancelForm()">
+    <app-queue-form
+      [queue]="selectedQueue"
+      [isLoading]="isFormLoading"
+      (save)="onSaveQueue($event)"
+      (cancel)="onCancelForm()"
+    ></app-queue-form>
+  </app-modal>
+
+  <!-- Delete Confirmation Dialog -->
+  <app-confirmation-dialog
+    [isOpen]="showDeleteConfirmation"
+    title="Delete Queue"
+    [message]="'Are you sure you want to delete &quot;' + (queueToDelete?.name || '') + '&quot;? This will also delete all tasks in this queue.'"
+    confirmButtonText="Delete"
+    (confirm)="confirmDelete()"
+    (cancel)="cancelDelete()"
+  ></app-confirmation-dialog>
+</div>
