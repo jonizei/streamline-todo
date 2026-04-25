@@ -22,7 +22,7 @@ RUN npm run build -- --configuration production
 FROM nginx:alpine
 
 # Copy built Angular app to Nginx
-COPY --from=builder /app/dist/ui /usr/share/nginx/html
+COPY --from=builder /app/dist/ui/browser /usr/share/nginx/html
 
 # Copy custom Nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
